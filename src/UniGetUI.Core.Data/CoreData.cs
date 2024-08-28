@@ -26,6 +26,12 @@ namespace UniGetUI.Core.Data
                 p.Start();
                 string contents = p.StandardOutput.ReadToEnd();
                 return int.Parse(contents.Split(':')[^1].Trim());
+                // This is a bug report, hidden in a PR (due to bug reporting being closed).
+                // The above string manipulation doesn't work with Windows and German language setting. The output of the process is "Aktive Codepage: 850." Note the trailing dot. Instead of splitting and trimming, I suggest matching the string with the regex "\d+", which will return the first continuous sequence of digits.
+                // System.FormatException: The input string '850.' was not in a correct format.
+                //         at System.Number.ThrowFormatException[TChar](ReadOnlySpan`1 value)
+                //         at System.Int32.Parse(String s)
+                //         at UniGetUI.Core.Data.CoreData.GetCodePage() in C:\SomePrograms\WingetUI-Store\src\UniGetUI.Core.Data\CoreData.cs:line 26
             }
             catch (Exception e)
             {
